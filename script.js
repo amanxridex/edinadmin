@@ -8,6 +8,7 @@ let currentAgents = [];
 let currentServices = [];
 let currentMedia = [];
 let currentLeads = [];
+let currentTestimonials = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Tabs Navigation
@@ -25,15 +26,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Fetch initial basic data
-    await loadSettings();
-    await loadCollections();
-    await loadAnalytics();
-    await loadLeads();
+    await initDashboard();
 
     // Setup forms
     setupSettingsForms();
     setupCollectionForms();
 });
+
+async function initDashboard() {
+    loadCollections();
+    loadSettings();
+    loadSiteContent();
+    loadTestimonials();
+    loadLeads();
+    loadAnalytics();
+}
 
 // Settings Handlers
 async function loadSettings() {
@@ -102,7 +109,7 @@ function renderProjects() {
             <td>${p.price}</td>
             <td>
                 <button class="btn-text" onclick="editProject(${p.id})">Edit</button>
-                <button class="btn-text text-danger" style="margin-left:10px;color:#ef4444;" onclick="deleteProject(${p.id})">Delete</button>
+                <button class="btn-text text-danger" style="margin-left:10px;color:#ef4444;" onclick="deleteItem('projects', ${p.id})">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -118,7 +125,7 @@ function renderAgents() {
             <td>${a.client_rating}</td>
             <td>
                 <button class="btn-text" onclick="editAgent(${a.id})">Edit</button>
-                <button class="btn-text" style="margin-left:10px;color:#ef4444;" onclick="deleteAgent(${a.id})">Delete</button>
+                <button class="btn-text" style="margin-left:10px;color:#ef4444;" onclick="deleteItem('agents', ${a.id})">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -132,7 +139,7 @@ function renderServices() {
             <td>${s.title}</td>
             <td>
                 <button class="btn-text" onclick="editService(${s.id})">Edit</button>
-                <button class="btn-text" style="margin-left:10px;color:#ef4444;" onclick="deleteService(${s.id})">Delete</button>
+                <button class="btn-text" style="margin-left:10px;color:#ef4444;" onclick="deleteItem('services', ${s.id})">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -148,7 +155,7 @@ function renderMedia() {
             <td>${m.date}</td>
             <td>
                 <button class="btn-text" onclick="editMedia(${m.id})">Edit</button>
-                <button class="btn-text" style="margin-left:10px;color:#ef4444;" onclick="deleteMedia(${m.id})">Delete</button>
+                <button class="btn-text" style="margin-left:10px;color:#ef4444;" onclick="deleteItem('media_posts', ${m.id})">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -208,10 +215,14 @@ window.editMedia = (id) => {
 };
 
 // Delete Handlers
-window.deleteProject = async (id) => { if(confirm('Delete project?')) { await supabaseClient.from('projects').delete().eq('id', id); loadCollections(); } };
-window.deleteAgent = async (id) => { if(confirm('Delete agent?')) { await supabaseClient.from('agents').delete().eq('id', id); loadCollections(); } };
-window.deleteService = async (id) => { if(confirm('Delete service?')) { await supabaseClient.from('services').delete().eq('id', id); loadCollections(); } };
-window.deleteMedia = async (id) => { if(confirm('Delete post?')) { await supabaseClient.from('media_posts').delete().eq('id', id); loadCollections(); } };
+async function deleteItem(table, id) {
+    if(confirm('Delete item?')) {
+        await supabaseClient.from(table).delete().eq('id', id);
+        if(table === 'leads') loadLeads();
+        else if(table === 'testimonials') loadTestimonials();
+        else loadCollections();
+    }
+}
 
 // Storage Uploader
 async function uploadImage(fileElement) {
@@ -311,7 +322,7 @@ function setupCollectionForms() {
             content: document.getElementById('m-content').value,
             img: imgUrl,
             date: id ? undefined : new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }),
-            read_time: '5 min read' // default placeholder
+            read_time: '5 min read' 
         };
         if(id) { await supabaseClient.from('media_posts').update(payload).eq('id', id); } 
         else { await supabaseClient.from('media_posts').insert([payload]); }
@@ -323,8 +334,8 @@ function setupCollectionForms() {
 // Modal and Toast Utilities
 window.openModal = (id) => {
     document.querySelectorAll('.admin-form').forEach(f => f.reset());
-    document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ''); // clear IDs
-    document.querySelectorAll('img[id$="-preview"]').forEach(img => { img.style.display = 'none'; img.src = ''; }); // clear previews
+    document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ''); 
+    document.querySelectorAll('img[id$="-preview"]').forEach(img => { img.style.display = 'none'; img.src = ''; }); 
     document.getElementById(id).style.display = 'block';
 };
 window.closeModal = (id) => document.getElementById(id).style.display = 'none';
@@ -348,64 +359,96 @@ async function loadAnalytics() {
     const { data: events, error } = await supabaseClient.from('analytics_events').select('*').order('created_at', { ascending: true });
     if (!events || events.length === 0) return;
 
-    // 1. Total Unique Users
     const uniqueUsers = new Set(events.map(e => e.visitor_id)).size;
-    document.getElementById('analytics-users').textContent = uniqueUsers;
+    document.getElementById('stat-users').textContent = uniqueUsers;
+    document.getElementById('stat-views').textContent = events.length;
 
-    // 2. Total Views
-    document.getElementById('analytics-views').textContent = events.length;
-
-    // 3. Top Pages
     const pageCounts = {};
     events.forEach(e => { pageCounts[e.path] = (pageCounts[e.path] || 0) + 1; });
     const sortedPages = Object.entries(pageCounts).sort((a,b) => b[1] - a[1]);
-    document.getElementById('analytics-top-page').textContent = sortedPages.length > 0 ? sortedPages[0][0] : '-';
+    document.getElementById('stat-top').textContent = sortedPages.length > 0 ? sortedPages[0][0] : '-';
 
-    document.getElementById('analytics-pages-body').innerHTML = sortedPages.slice(0, 5).map(p => `
-        <tr><td>${p[0]}</td><td>${p[1]}</td></tr>
+    document.getElementById('top-pages-tbody').innerHTML = sortedPages.slice(0, 5).map(p => `
+        <tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'">
+            <td style="padding: 1rem 0.75rem; color: #d1d5db; border-bottom: 1px solid rgba(255,255,255,0.05);">${p[0]}</td>
+            <td style="padding: 1rem 0.75rem; color: #fff; text-align: right; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">${p[1]}</td>
+        </tr>
     `).join('');
 
-    // 4. Top Referrers
     const refCounts = {};
     events.forEach(e => { refCounts[e.referrer] = (refCounts[e.referrer] || 0) + 1; });
     const sortedRefs = Object.entries(refCounts).sort((a,b) => b[1] - a[1]);
-    document.getElementById('analytics-referrers-body').innerHTML = sortedRefs.slice(0, 5).map(r => `
-        <tr><td><span style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r[0] || 'Direct'}</span></td><td>${r[1]}</td></tr>
+    document.getElementById('referrers-tbody').innerHTML = sortedRefs.slice(0, 5).map(r => `
+        <tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'">
+            <td style="padding: 1rem 0.75rem; color: #d1d5db; border-bottom: 1px solid rgba(255,255,255,0.05);"><span style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r[0] || 'Direct'}</span></td>
+            <td style="padding: 1rem 0.75rem; color: #fff; text-align: right; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">${r[1]}</td>
+        </tr>
     `).join('');
 
-    // 5. Chart.js (Views per day)
-    const days = {};
-    events.forEach(e => {
-        const date = new Date(e.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        days[date] = (days[date] || 0) + 1;
-    });
-
-    // Check if chart exists to destroy before re-rendering
+    const today = new Date();
+    const daysArr = [];
+    for(let i=29; i>=0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        daysArr.push(d.toISOString().split('T')[0]);
+    }
+    const viewsPerDay = daysArr.map(d => events.filter(e => e.created_at.startsWith(d)).length);
     if (window.analyticsChart) window.analyticsChart.destroy();
-
     const ctx = document.getElementById('viewsChart').getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+    gradient.addColorStop(0, 'rgba(139, 92, 246, 0.5)');
+    gradient.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
     window.analyticsChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: Object.keys(days),
+            labels: daysArr.map(d => d.substring(5)),
             datasets: [{
                 label: 'Page Views',
-                data: Object.values(days),
-                borderColor: '#60a5fa',
-                backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                borderWidth: 2,
-                pointBackgroundColor: '#60a5fa',
+                data: viewsPerDay,
+                borderColor: '#8b5cf6',
+                borderWidth: 3,
+                backgroundColor: gradient,
+                fill: true,
                 tension: 0.4,
-                fill: true
+                pointBackgroundColor: '#111827',
+                pointBorderColor: '#8b5cf6',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            interaction: { mode: 'index', intersect: false },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                    titleColor: '#a0a0a0',
+                    bodyColor: '#fff',
+                    bodyFont: { size: 14, weight: 'bold' },
+                    borderColor: 'rgba(139, 92, 246, 0.3)',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) { return context.parsed.y + ' Views'; }
+                    }
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', precision: 0 } },
-                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, 
+                    border: { display: false },
+                    ticks: { color: '#6b7280', precision: 0, padding: 10 } 
+                },
+                x: { 
+                    grid: { display: false, drawBorder: false }, 
+                    border: { display: false },
+                    ticks: { color: '#6b7280', maxTicksLimit: 10, padding: 10 } 
+                }
             }
         }
     });
@@ -437,7 +480,7 @@ async function loadLeads() {
                     <option value="Contacted" ${l.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
                     <option value="Resolved" ${l.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
                 </select>
-                <button class="btn-text text-danger" style="color:#ef4444;" onclick="deleteLead(${l.id})">Delete</button>
+                <button class="btn-text text-danger" style="color:#ef4444;" onclick="deleteItem('leads', ${l.id})">Delete</button>
             </td>
         </tr>
     `}).join('');
@@ -449,9 +492,105 @@ window.updateLeadStatus = async (id, newStatus) => {
     showToast();
 };
 
-window.deleteLead = async (id) => {
-    if(confirm('Delete lead?')) {
-        await supabaseClient.from('leads').delete().eq('id', id);
-        loadLeads();
+// Testimonials Logic
+async function loadTestimonials() {
+    const { data: tests } = await supabaseClient.from('testimonials').select('*').order('id', { ascending: true });
+    currentTestimonials = tests || [];
+    const tbody = document.getElementById('testimonials-table-body');
+    if(!tbody) return;
+    tbody.innerHTML = currentTestimonials.map(t => `
+        <tr>
+            <td>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${t.logo ? `<img src="${t.logo}" style="width: 30px; height: 30px; border-radius: 4px; object-fit: contain; background: #fff;" />` : ''}
+                    ${t.company}
+                </div>
+            </td>
+            <td>${t.subtitle}</td>
+            <td><div style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.review_text}">${t.review_text}</div></td>
+            <td>
+                <button class="btn-text" onclick="openModal('testimonials', ${t.id})">Edit</button>
+                <button class="btn-text text-danger" style="margin-left:10px;color:#ef4444;" onclick="deleteItem('testimonials', ${t.id})">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Site Content Logic
+async function loadSiteContent() {
+    const { data: site } = await supabaseClient.from('site_settings').select('*').single();
+    if (site) {
+        if(document.getElementById('site-email')) document.getElementById('site-email').value = site.contact_email;
+        if(document.getElementById('site-phone')) document.getElementById('site-phone').value = site.contact_phone;
+        if(document.getElementById('site-address')) document.getElementById('site-address').value = site.contact_address;
     }
-};
+
+    const { data: meth } = await supabaseClient.from('methodology_settings').select('*').single();
+    if (meth) {
+        if(document.getElementById('meth-heading')) document.getElementById('meth-heading').value = meth.heading;
+        if(document.getElementById('meth-sub')) document.getElementById('meth-sub').value = meth.subheading;
+        if(document.getElementById('meth-c1-title')) document.getElementById('meth-c1-title').value = meth.circle1_title;
+        if(document.getElementById('meth-c1-desc')) document.getElementById('meth-c1-desc').value = meth.circle1_desc;
+        if(document.getElementById('meth-c2-title')) document.getElementById('meth-c2-title').value = meth.circle2_title;
+        if(document.getElementById('meth-c2-desc')) document.getElementById('meth-c2-desc').value = meth.circle2_desc;
+        if(document.getElementById('meth-c3-title')) document.getElementById('meth-c3-title').value = meth.circle3_title;
+        if(document.getElementById('meth-c3-desc')) document.getElementById('meth-c3-desc').value = meth.circle3_desc;
+    }
+
+    const { data: co } = await supabaseClient.from('company_overview_settings').select('*').single();
+    if (co) {
+        if(document.getElementById('co-heading')) document.getElementById('co-heading').value = co.heading;
+        if(document.getElementById('co-sub')) document.getElementById('co-sub').value = co.subheading;
+        if(document.getElementById('co-stats')) document.getElementById('co-stats').value = typeof co.stats_json === 'string' ? co.stats_json : JSON.stringify(co.stats_json, null, 2);
+        if(document.getElementById('co-values')) document.getElementById('co-values').value = typeof co.values_json === 'string' ? co.values_json : JSON.stringify(co.values_json, null, 2);
+    }
+}
+
+window.saveSiteContent = async () => {
+    try {
+        await supabaseClient.from('site_settings').upsert({
+            id: 1,
+            contact_email: document.getElementById('site-email').value,
+            contact_phone: document.getElementById('site-phone').value,
+            contact_address: document.getElementById('site-address').value
+        });
+
+        await supabaseClient.from('methodology_settings').upsert({
+            id: 1,
+            heading: document.getElementById('meth-heading').value,
+            subheading: document.getElementById('meth-sub').value,
+            circle1_title: document.getElementById('meth-c1-title').value,
+            circle1_desc: document.getElementById('meth-c1-desc').value,
+            circle2_title: document.getElementById('meth-c2-title').value,
+            circle2_desc: document.getElementById('meth-c2-desc').value,
+            circle3_title: document.getElementById('meth-c3-title').value,
+            circle3_desc: document.getElementById('meth-c3-desc').value
+        });
+
+        const statsJsonStr = document.getElementById('co-stats').value;
+        const valuesJsonStr = document.getElementById('co-values').value;
+        
+        let stats_json;
+        let values_json;
+        try {
+            stats_json = JSON.parse(statsJsonStr);
+            values_json = JSON.parse(valuesJsonStr);
+        } catch (e) {
+            alert('Invalid JSON in Stats or Values field. Please correct it before saving.');
+            return;
+        }
+
+        await supabaseClient.from('company_overview_settings').upsert({
+            id: 1,
+            heading: document.getElementById('co-heading').value,
+            subheading: document.getElementById('co-sub').value,
+            stats_json: stats_json,
+            values_json: values_json
+        });
+
+        showToast();
+    } catch (e) {
+        console.error(e);
+        alert('Failed to save configuration');
+    }
+}

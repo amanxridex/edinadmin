@@ -84,351 +84,149 @@
                             <div class="value" id="stat-media">-</div>
                         </div>
                         <div class="stat-card" style="border-top: 4px solid #10b981;">
-                            <h3>Total Leads</h3>
-                            <div class="value" id="stat-leads">-</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+                        
+                        <!-- Contact Info Settings -->
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem;">
+                            <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Contact Information</h3>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="site-email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="text" id="site-phone" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Physical Address</label>
+                                <input type="text" id="site-address" class="form-control">
+                            </div>
                         </div>
+
+                        <!-- Methodology Settings -->
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem;">
+                            <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Methodology Section</h3>
+                            <div class="form-group">
+                                <label>Main Heading</label>
+                                <input type="text" id="meth-heading" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Subheading text</label>
+                                <textarea id="meth-sub" class="form-control"></textarea>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                                <div>
+                                    <label style="color:#aaa">Circle 1 Title</label>
+                                    <input type="text" id="meth-c1-title" class="form-control" style="margin-bottom:0.5rem">
+                                    <textarea id="meth-c1-desc" class="form-control" rows="3"></textarea>
+                                </div>
+                                <div>
+                                    <label style="color:#aaa">Circle 2 Title</label>
+                                    <input type="text" id="meth-c2-title" class="form-control" style="margin-bottom:0.5rem">
+                                    <textarea id="meth-c2-desc" class="form-control" rows="3"></textarea>
+                                </div>
+                                <div>
+                                    <label style="color:#aaa">Circle 3 Title</label>
+                                    <input type="text" id="meth-c3-title" class="form-control" style="margin-bottom:0.5rem">
+                                    <textarea id="meth-c3-desc" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Company Overview Settings -->
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem;">
+                            <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Company Overview (About Us)</h3>
+                            <div class="form-group">
+                                <label>Main Heading</label>
+                                <input type="text" id="co-heading" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Subheading text</label>
+                                <textarea id="co-sub" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Stats JSON</label>
+                                <textarea id="co-stats" class="form-control" rows="4" style="font-family: monospace;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Values JSON</label>
+                                <textarea id="co-values" class="form-control" rows="6" style="font-family: monospace;"></textarea>
+                            </div>
+                        </div>
+
                     </div>
                 </section>
 
-                <!-- Analytics Tab -->
-                <section id="analytics-tab" class="tab-content">
+                <!-- Testimonials Tab -->
+                <section id="testimonials-tab" class="tab-content" style="display: none;">
                     <div class="header-flex">
-                        <h2>Website Analytics</h2>
+                        <h2>Testimonials</h2>
+                        <button class="btn btn-primary" onclick="openModal('testimonials')">Add Testimonial</button>
                     </div>
-                    
-                    <div class="stats-grid" style="margin-bottom: 2rem;">
-                        <div class="stat-card" style="border-top: 4px solid #10b981;">
-                            <h3>Total Unique Users</h3>
-                            <div class="stat-value" id="analytics-users">-</div>
-                        </div>
-                        <div class="stat-card" style="border-top: 4px solid #3b82f6;">
-                            <h3>Total Page Views</h3>
-                            <div class="stat-value" id="analytics-views">-</div>
-                        </div>
-                        <div class="stat-card" style="border-top: 4px solid #f59e0b;">
-                            <h3>Most Visited Page</h3>
-                            <div class="stat-value" id="analytics-top-page" style="font-size: 1.5rem;">-</div>
-                        </div>
-                    </div>
-
-                    <div class="chart-container" style="background: var(--bg-panel); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 2rem; position: relative; height: 350px;">
-                        <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: #e5e7eb;">Views Over Time (Last 30 Days)</h3>
-                        <canvas id="viewsChart"></canvas>
-                    </div>
-
-                    <div class="tables-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                        <div class="table-container">
-                            <h3>Top Pages</h3>
-                            <table class="data-table">
-                                <thead><tr><th>Path</th><th>Views</th></tr></thead>
-                                <tbody id="analytics-pages-body"></tbody>
-                            </table>
-                        </div>
-                        <div class="table-container">
-                            <h3>Top Referrers</h3>
-                            <table class="data-table">
-                                <thead><tr><th>Source</th><th>Visitors</th></tr></thead>
-                                <tbody id="analytics-referrers-body"></tbody>
-                            </table>
-                        </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Subtitle</th>
+                                    <th>Review text</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="testimonials-table-body">
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
                     </div>
                 </section>
-
-                <!-- Leads Tab -->
-                <section id="leads-tab" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header-flex">
-                            <h2>Incoming Leads</h2>
-                        </div>
-                        <div class="table-container">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Name</th>
-                                        <th>Contact Info</th>
-                                        <th>Message</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="leads-table-body">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Hero Section Tab -->
-                <section id="hero" class="tab-content">
-                    <div class="panel">
-                        <h2>Hero Section Settings</h2>
-                        <form id="hero-form" class="admin-form">
-                            <div class="form-group">
-                                <label for="hero-title">Main Headline</label>
-                                <input type="text" id="hero-title" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="hero-subtitle">Sub Headline (Optional)</label>
-                                <textarea id="hero-subtitle" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="hero-cta">CTA Button Text (Optional)</label>
-                                <input type="text" id="hero-cta">
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- About Tab -->
-                <section id="about" class="tab-content">
-                    <div class="panel">
-                        <h2>About Us Content</h2>
-                        <form id="about-form" class="admin-form">
-                            <div class="form-group">
-                                <label for="about-vision">Our Vision Statement</label>
-                                <textarea id="about-vision" rows="4"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="about-mission">Our Mission Statement</label>
-                                <textarea id="about-mission" rows="4"></textarea>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- Projects Tab -->
-                <section id="projects" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header-flex">
-                            <h2>Manage Projects</h2>
-                            <button class="btn btn-secondary" onclick="openModal('projectModal')">Add New Project</button>
-                        </div>
-                        <div class="table-container">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Project Name</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="projects-table-body">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Agents Tab -->
-                <section id="agents" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header-flex">
-                            <h2>Manage Agents</h2>
-                            <button class="btn btn-secondary" onclick="openModal('agentModal')">Add New Agent</button>
-                        </div>
-                        <div class="table-container">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Role</th>
-                                        <th>Rating</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="agents-table-body">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Services Tab -->
-                <section id="services" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header-flex">
-                            <h2>Manage Services</h2>
-                            <button class="btn btn-secondary" onclick="openModal('serviceModal')">Add New Service</button>
-                        </div>
-                        <div class="table-container">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Service Title</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="services-table-body">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Media Tab -->
-                <section id="media" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header-flex">
-                            <h2>Manage Media / News</h2>
-                            <button class="btn btn-secondary" onclick="openModal('mediaModal')">Add New Post</button>
-                        </div>
-                        <div class="table-container">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Type</th>
-                                        <th>Title</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="media-table-body">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
             </div>
         </main>
     </div>
 
     <!-- Modals -->
-    <!-- Project Modal -->
-    <div id="projectModal" class="modal">
+    <div id="testimonials-modal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('projectModal')">&times;</span>
-            <h2>Edit Project</h2>
-            <form id="project-form" class="admin-form">
-                <input type="hidden" id="p-id">
+            <h3 style="margin-top:0">Testimonial Details</h3>
+            <form id="testimonials-form" onsubmit="handleFormSubmit(event, 'testimonials')">
+                <input type="hidden" id="testimonials-id">
                 <div class="form-group">
-                    <label>Title</label><input type="text" id="p-title" required>
-                </div>
-                <div class="form-group">
-                    <label>Description</label><textarea id="p-desc" required></textarea>
-                </div>
-                <div style="display:flex;gap:1rem;">
-                    <div class="form-group" style="flex:1"><label>Price</label><input type="text" id="p-price" required></div>
-                    <div class="form-group" style="flex:1"><label>Category</label><input type="text" id="p-cat" required></div>
-                </div>
-                <div style="display:flex;gap:1rem;">
-                    <div class="form-group" style="flex:1"><label>City</label><input type="text" id="p-city" required></div>
-                    <div class="form-group" style="flex:1"><label>Date (Year)</label><input type="text" id="p-date" required></div>
+                    <label>Company Name</label>
+                    <input type="text" id="testimonials-company" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Project Image</label>
-                    <img id="p-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
-                    <input type="file" id="p-img-file" accept="image/*">
-                    <input type="hidden" id="p-img">
-                </div>
-                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Project</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Agent Modal -->
-    <div id="agentModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('agentModal')">&times;</span>
-            <h2>Edit Agent</h2>
-            <form id="agent-form" class="admin-form">
-                <input type="hidden" id="a-id">
-                <div class="form-group">
-                    <label>Name</label><input type="text" id="a-name" required>
+                    <label>Subtitle / Designation</label>
+                    <input type="text" id="testimonials-subtitle" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Role</label><input type="text" id="a-role" required>
-                </div>
-                <div class="form-group">
-                    <label>Bio</label><textarea id="a-bio" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Agent Image</label>
-                    <img id="a-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
-                    <input type="file" id="a-img-file" accept="image/*">
-                    <input type="hidden" id="a-img">
-                </div>
-                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Agent</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Service Modal -->
-    <div id="serviceModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('serviceModal')">&times;</span>
-            <h2>Edit Service</h2>
-            <form id="service-form" class="admin-form">
-                <input type="hidden" id="s-id">
-                <div class="form-group">
-                    <label>Title</label><input type="text" id="s-title" required>
-                </div>
-                <div class="form-group">
-                    <label>Description</label><textarea id="s-desc" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Icon SVG Code</label><textarea id="s-icon" rows="3" required></textarea>
-                </div>
-                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Service</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Media Modal -->
-    <div id="mediaModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('mediaModal')">&times;</span>
-            <h2>Edit Media Post</h2>
-            <form id="media-form" class="admin-form">
-                <input type="hidden" id="m-id">
-                <div style="display:flex;gap:1rem;">
-                    <div class="form-group" style="flex:1">
-                        <label>Type</label>
-                        <select id="m-type" style="width:100%;padding:1rem;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;">
-                            <option>News</option><option>Blog</option><option>Press Release</option>
-                        </select>
+                    <label>Company Logo URL (Optional)</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="url" id="testimonials-logo" class="form-control" style="flex: 1;">
+                        <input type="file" id="testimonials-logo-upload" accept="image/*" style="display: none;" onchange="uploadImage(event, 'testimonials-logo')">
+                        <button type="button" class="btn" style="background: #374151; color: white;" onclick="document.getElementById('testimonials-logo-upload').click()">Upload Image</button>
                     </div>
-                    <div class="form-group" style="flex:2"><label>Title</label><input type="text" id="m-title" required></div>
                 </div>
                 <div class="form-group">
-                    <label>Short Description</label><textarea id="m-desc" required></textarea>
+                    <label>Review text</label>
+                    <textarea id="testimonials-review_text" class="form-control" rows="4" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Full Content</label><textarea id="m-content" rows="6" required></textarea>
+                    <label>Box Color (Hex Code)</label>
+                    <input type="color" id="testimonials-box_color" class="form-control" value="#ffee00" style="padding: 0; height: 40px;">
                 </div>
-                <div class="form-group">
-                    <label>Post Image</label>
-                    <img id="m-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
-                    <input type="file" id="m-img-file" accept="image/*">
-                    <input type="hidden" id="m-img">
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="button" class="btn" onclick="closeModal('testimonials')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Testimonial</button>
                 </div>
-                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Post</button></div>
             </form>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast">Changes saved successfully!</div>
+    <div id="toast" class="toast">Action completed successfully</div>
 
-    <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
 </html>
