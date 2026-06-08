@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fetch initial basic data
     await loadSettings();
     await loadCollections();
+    await loadAnalytics();
 
     // Setup forms
     setupSettingsForms();
@@ -285,4 +286,72 @@ function showToast() {
     void toast.offsetWidth;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Analytics Logic
+async function loadAnalytics() {
+    const { data: events, error } = await supabaseClient.from('analytics_events').select('*').order('created_at', { ascending: true });
+    if (!events || events.length === 0) return;
+
+    // 1. Total Unique Users
+    const uniqueUsers = new Set(events.map(e => e.visitor_id)).size;
+    document.getElementById('analytics-users').textContent = uniqueUsers;
+
+    // 2. Total Views
+    document.getElementById('analytics-views').textContent = events.length;
+
+    // 3. Top Pages
+    const pageCounts = {};
+    events.forEach(e => { pageCounts[e.path] = (pageCounts[e.path] || 0) + 1; });
+    const sortedPages = Object.entries(pageCounts).sort((a,b) => b[1] - a[1]);
+    document.getElementById('analytics-top-page').textContent = sortedPages.length > 0 ? sortedPages[0][0] : '-';
+
+    document.getElementById('analytics-pages-body').innerHTML = sortedPages.slice(0, 5).map(p => `
+        <tr><td>${p[0]}</td><td>${p[1]}</td></tr>
+    `).join('');
+
+    // 4. Top Referrers
+    const refCounts = {};
+    events.forEach(e => { refCounts[e.referrer] = (refCounts[e.referrer] || 0) + 1; });
+    const sortedRefs = Object.entries(refCounts).sort((a,b) => b[1] - a[1]);
+    document.getElementById('analytics-referrers-body').innerHTML = sortedRefs.slice(0, 5).map(r => `
+        <tr><td><span style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r[0] || 'Direct'}</span></td><td>${r[1]}</td></tr>
+    `).join('');
+
+    // 5. Chart.js (Views per day)
+    const days = {};
+    events.forEach(e => {
+        const date = new Date(e.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        days[date] = (days[date] || 0) + 1;
+    });
+
+    // Check if chart exists to destroy before re-rendering
+    if (window.analyticsChart) window.analyticsChart.destroy();
+
+    const ctx = document.getElementById('viewsChart').getContext('2d');
+    window.analyticsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Object.keys(days),
+            datasets: [{
+                label: 'Page Views',
+                data: Object.values(days),
+                borderColor: '#60a5fa',
+                backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: '#60a5fa',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', precision: 0 } },
+                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } }
+            }
+        }
+    });
 }
