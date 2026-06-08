@@ -333,7 +333,10 @@
                     <div class="form-group" style="flex:1"><label>Date (Year)</label><input type="text" id="p-date" required></div>
                 </div>
                 <div class="form-group">
-                    <label>Image URL</label><input type="text" id="p-img" required>
+                    <label>Project Image</label>
+                    <img id="p-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
+                    <input type="file" id="p-img-file" accept="image/*">
+                    <input type="hidden" id="p-img">
                 </div>
                 <div class="form-actions"><button type="submit" class="btn btn-primary">Save Project</button></div>
             </form>
@@ -357,7 +360,10 @@
                     <label>Bio</label><textarea id="a-bio" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Image URL</label><input type="text" id="a-img" required>
+                    <label>Agent Image</label>
+                    <img id="a-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
+                    <input type="file" id="a-img-file" accept="image/*">
+                    <input type="hidden" id="a-img">
                 </div>
                 <div class="form-actions"><button type="submit" class="btn btn-primary">Save Agent</button></div>
             </form>
@@ -408,7 +414,10 @@
                     <label>Full Content</label><textarea id="m-content" rows="6" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Image URL</label><input type="text" id="m-img" required>
+                    <label>Post Image</label>
+                    <img id="m-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
+                    <input type="file" id="m-img-file" accept="image/*">
+                    <input type="hidden" id="m-img">
                 </div>
                 <div class="form-actions"><button type="submit" class="btn btn-primary">Save Post</button></div>
             </form>

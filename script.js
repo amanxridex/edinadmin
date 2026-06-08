@@ -165,6 +165,9 @@ window.editProject = (id) => {
     document.getElementById('p-city').value = p.city;
     document.getElementById('p-date').value = p.date;
     document.getElementById('p-img').value = p.img;
+    const preview = document.getElementById('p-img-preview');
+    if(p.img) { preview.src = p.img; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
+    document.getElementById('p-img-file').value = '';
     openModal('projectModal');
 };
 
@@ -175,6 +178,9 @@ window.editAgent = (id) => {
     document.getElementById('a-role').value = a.role;
     document.getElementById('a-bio').value = a.bio;
     document.getElementById('a-img').value = a.image;
+    const preview = document.getElementById('a-img-preview');
+    if(a.image) { preview.src = a.image; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
+    document.getElementById('a-img-file').value = '';
     openModal('agentModal');
 };
 
@@ -195,6 +201,9 @@ window.editMedia = (id) => {
     document.getElementById('m-desc').value = m.description;
     document.getElementById('m-content').value = m.content;
     document.getElementById('m-img').value = m.img;
+    const preview = document.getElementById('m-img-preview');
+    if(m.img) { preview.src = m.img; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
+    document.getElementById('m-img-file').value = '';
     openModal('mediaModal');
 };
 
@@ -204,10 +213,38 @@ window.deleteAgent = async (id) => { if(confirm('Delete agent?')) { await supaba
 window.deleteService = async (id) => { if(confirm('Delete service?')) { await supabaseClient.from('services').delete().eq('id', id); loadCollections(); } };
 window.deleteMedia = async (id) => { if(confirm('Delete post?')) { await supabaseClient.from('media_posts').delete().eq('id', id); loadCollections(); } };
 
+// Storage Uploader
+async function uploadImage(fileElement) {
+    const file = fileElement.files[0];
+    if (!file) return null;
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+    
+    const { error: uploadError } = await supabaseClient.storage
+        .from('IMG-AG')
+        .upload(fileName, file);
+        
+    if (uploadError) {
+        console.error('Upload Error:', uploadError);
+        alert('Image upload failed! Ensure bucket "IMG-AG" exists and is public.');
+        return null;
+    }
+    
+    const { data } = supabaseClient.storage.from('IMG-AG').getPublicUrl(fileName);
+    return data.publicUrl;
+}
+
 // Form Submissions
 function setupCollectionForms() {
     document.getElementById('project-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = e.target.querySelector('button'); btn.textContent = 'Saving...';
+        
+        let imgUrl = document.getElementById('p-img').value;
+        const newImgUrl = await uploadImage(document.getElementById('p-img-file'));
+        if (newImgUrl) imgUrl = newImgUrl;
+
         const id = document.getElementById('p-id').value;
         const payload = {
             title: document.getElementById('p-title').value,
@@ -216,25 +253,33 @@ function setupCollectionForms() {
             category: document.getElementById('p-cat').value,
             city: document.getElementById('p-city').value,
             date: document.getElementById('p-date').value,
-            img: document.getElementById('p-img').value,
+            img: imgUrl,
         };
         if(id) { await supabaseClient.from('projects').update(payload).eq('id', id); } 
         else { await supabaseClient.from('projects').insert([payload]); }
         closeModal('projectModal'); loadCollections(); showToast();
+        btn.textContent = 'Save Project';
     });
 
     document.getElementById('agent-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = e.target.querySelector('button'); btn.textContent = 'Saving...';
+
+        let imgUrl = document.getElementById('a-img').value;
+        const newImgUrl = await uploadImage(document.getElementById('a-img-file'));
+        if (newImgUrl) imgUrl = newImgUrl;
+
         const id = document.getElementById('a-id').value;
         const payload = {
             name: document.getElementById('a-name').value,
             role: document.getElementById('a-role').value,
             bio: document.getElementById('a-bio').value,
-            image: document.getElementById('a-img').value,
+            image: imgUrl,
         };
         if(id) { await supabaseClient.from('agents').update(payload).eq('id', id); } 
         else { await supabaseClient.from('agents').insert([payload]); }
         closeModal('agentModal'); loadCollections(); showToast();
+        btn.textContent = 'Save Agent';
     });
 
     document.getElementById('service-form').addEventListener('submit', async (e) => {
@@ -252,26 +297,34 @@ function setupCollectionForms() {
 
     document.getElementById('media-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = e.target.querySelector('button'); btn.textContent = 'Saving...';
+
+        let imgUrl = document.getElementById('m-img').value;
+        const newImgUrl = await uploadImage(document.getElementById('m-img-file'));
+        if (newImgUrl) imgUrl = newImgUrl;
+
         const id = document.getElementById('m-id').value;
         const payload = {
             type: document.getElementById('m-type').value,
             title: document.getElementById('m-title').value,
             description: document.getElementById('m-desc').value,
             content: document.getElementById('m-content').value,
-            img: document.getElementById('m-img').value,
+            img: imgUrl,
             date: id ? undefined : new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }),
             read_time: '5 min read' // default placeholder
         };
         if(id) { await supabaseClient.from('media_posts').update(payload).eq('id', id); } 
         else { await supabaseClient.from('media_posts').insert([payload]); }
         closeModal('mediaModal'); loadCollections(); showToast();
+        btn.textContent = 'Save Post';
     });
 }
 
 // Modal and Toast Utilities
 window.openModal = (id) => {
     document.querySelectorAll('.admin-form').forEach(f => f.reset());
-    document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ''); // clear IDs for New insertions
+    document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ''); // clear IDs
+    document.querySelectorAll('img[id$="-preview"]').forEach(img => { img.style.display = 'none'; img.src = ''; }); // clear previews
     document.getElementById(id).style.display = 'block';
 };
 window.closeModal = (id) => document.getElementById(id).style.display = 'none';
