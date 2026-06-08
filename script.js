@@ -25,6 +25,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
+    // Check session on load
+    if (sessionStorage.getItem('jaadugar_auth') === 'true') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('admin-container').style.display = 'flex';
+        initDashboard();
+        setupSettingsForms();
+        setupCollectionForms();
+    }
+
     // Login Logic
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
@@ -33,11 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const user = document.getElementById('login-user').value;
             const pass = document.getElementById('login-pass').value;
             if (user === 'JAADUGAR' && pass === 'EDINFRATECH1') {
+                sessionStorage.setItem('jaadugar_auth', 'true');
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('admin-container').style.display = 'flex';
-                // Fetch initial basic data
                 await initDashboard();
-                // Setup forms
                 setupSettingsForms();
                 setupCollectionForms();
             } else {
@@ -46,6 +54,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
+
+window.logout = () => {
+    sessionStorage.removeItem('jaadugar_auth');
+    location.reload();
+};
 
 async function initDashboard() {
     loadCollections();
