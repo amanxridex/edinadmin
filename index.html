@@ -320,11 +320,268 @@
                         </table>
                     </div>
                 </section>
-            </div>
+            
+<!-- Hero Section Tab -->
+                <section id="hero" class="tab-content">
+                    <div class="panel">
+                        <h2>Hero Section Settings</h2>
+                        <form id="hero-form" class="admin-form">
+                            <div class="form-group">
+                                <label for="hero-title">Main Headline</label>
+                                <input type="text" id="hero-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="hero-subtitle">Sub Headline (Optional)</label>
+                                <textarea id="hero-subtitle" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="hero-cta">CTA Button Text (Optional)</label>
+                                <input type="text" id="hero-cta">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+<!-- About Tab -->
+                <section id="about" class="tab-content">
+                    <div class="panel">
+                        <h2>About Us Content</h2>
+                        <form id="about-form" class="admin-form">
+                            <div class="form-group">
+                                <label for="about-vision">Our Vision Statement</label>
+                                <textarea id="about-vision" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="about-mission">Our Mission Statement</label>
+                                <textarea id="about-mission" rows="4"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+<!-- Projects Tab -->
+                <section id="projects" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header-flex">
+                            <h2>Manage Projects</h2>
+                            <button class="btn btn-secondary" onclick="openModal('projectModal')">Add New Project</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Project Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="projects-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+<!-- Agents Tab -->
+                <section id="agents" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header-flex">
+                            <h2>Manage Agents</h2>
+                            <button class="btn btn-secondary" onclick="openModal('agentModal')">Add New Agent</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Rating</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="agents-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+<!-- Services Tab -->
+                <section id="services" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header-flex">
+                            <h2>Manage Services</h2>
+                            <button class="btn btn-secondary" onclick="openModal('serviceModal')">Add New Service</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Service Title</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="services-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+<!-- Media Tab -->
+                <section id="media" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header-flex">
+                            <h2>Manage Media / News</h2>
+                            <button class="btn btn-secondary" onclick="openModal('mediaModal')">Add New Post</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Type</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="media-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+</div>
         </main>
     </div>
 
     <!-- Modals -->
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('projectModal')">&times;</span>
+            <h2>Edit Project</h2>
+            <form id="project-form" class="admin-form">
+                <input type="hidden" id="p-id">
+                <div class="form-group">
+                    <label>Title</label><input type="text" id="p-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label><textarea id="p-desc" required></textarea>
+                </div>
+                <div style="display:flex;gap:1rem;">
+                    <div class="form-group" style="flex:1"><label>Price</label><input type="text" id="p-price" required></div>
+                    <div class="form-group" style="flex:1"><label>Category</label><input type="text" id="p-cat" required></div>
+                </div>
+                <div style="display:flex;gap:1rem;">
+                    <div class="form-group" style="flex:1"><label>City</label><input type="text" id="p-city" required></div>
+                    <div class="form-group" style="flex:1"><label>Date (Year)</label><input type="text" id="p-date" required></div>
+                </div>
+                <div class="form-group">
+                    <label>Project Image</label>
+                    <img id="p-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
+                    <input type="file" id="p-img-file" accept="image/*">
+                    <input type="hidden" id="p-img">
+                </div>
+                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Project</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Agent Modal -->
+    <div id="agentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('agentModal')">&times;</span>
+            <h2>Edit Agent</h2>
+            <form id="agent-form" class="admin-form">
+                <input type="hidden" id="a-id">
+                <div class="form-group">
+                    <label>Name</label><input type="text" id="a-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label><input type="text" id="a-role" required>
+                </div>
+                <div class="form-group">
+                    <label>Bio</label><textarea id="a-bio" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Agent Image</label>
+                    <img id="a-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
+                    <input type="file" id="a-img-file" accept="image/*">
+                    <input type="hidden" id="a-img">
+                </div>
+                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Agent</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('serviceModal')">&times;</span>
+            <h2>Edit Service</h2>
+            <form id="service-form" class="admin-form">
+                <input type="hidden" id="s-id">
+                <div class="form-group">
+                    <label>Title</label><input type="text" id="s-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label><textarea id="s-desc" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Icon SVG Code</label><textarea id="s-icon" rows="3" required></textarea>
+                </div>
+                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Service</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Media Modal -->
+    <div id="mediaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('mediaModal')">&times;</span>
+            <h2>Edit Media Post</h2>
+            <form id="media-form" class="admin-form">
+                <input type="hidden" id="m-id">
+                <div style="display:flex;gap:1rem;">
+                    <div class="form-group" style="flex:1">
+                        <label>Type</label>
+                        <select id="m-type" style="width:100%;padding:1rem;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;">
+                            <option>News</option><option>Blog</option><option>Press Release</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:2"><label>Title</label><input type="text" id="m-title" required></div>
+                </div>
+                <div class="form-group">
+                    <label>Short Description</label><textarea id="m-desc" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Full Content</label><textarea id="m-content" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Post Image</label>
+                    <img id="m-img-preview" src="" style="display:none; width:100px; height:auto; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
+                    <input type="file" id="m-img-file" accept="image/*">
+                    <input type="hidden" id="m-img">
+                </div>
+                <div class="form-actions"><button type="submit" class="btn btn-primary">Save Post</button></div>
+            </form>
+        </div>
+    </div>
+
+    
+
     <div id="testimonials-modal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0">Testimonial Details</h3>
@@ -362,7 +619,8 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    
+<!-- Toast Notification -->
     <div id="toast" class="toast">Action completed successfully</div>
 
     <script src="script.js"></script>
