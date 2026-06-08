@@ -1,7 +1,7 @@
 const supabaseUrl = 'https://gyytgmnfnjjywwzjokir.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5eXRnbW5mbmpqeXd3empva2lyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4NjU4MjgsImV4cCI6MjA5NjQ0MTgyOH0.p3smuHmPt3nowXEPeejjx5MCyJWufLyiM4G7fSeDhes';
 
-const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
 let currentProjects = [];
 let currentAgents = [];
@@ -34,13 +34,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Settings Handlers
 async function loadSettings() {
-    const { data: heroData } = await supabase.from('hero_settings').select('*').eq('id', 1).single();
+    const { data: heroData } = await supabaseClient.from('hero_settings').select('*').eq('id', 1).single();
     if (heroData) {
         document.getElementById('hero-title').value = heroData.title;
         document.getElementById('hero-subtitle').value = heroData.subtitle;
         document.getElementById('hero-cta').value = heroData.cta;
     }
-    const { data: aboutData } = await supabase.from('about_settings').select('*').eq('id', 1).single();
+    const { data: aboutData } = await supabaseClient.from('about_settings').select('*').eq('id', 1).single();
     if (aboutData) {
         document.getElementById('about-vision').value = aboutData.vision;
         document.getElementById('about-mission').value = aboutData.mission;
@@ -51,13 +51,13 @@ function setupSettingsForms() {
     document.getElementById('hero-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button'); btn.textContent = "Saving...";
-        await supabase.from('hero_settings').upsert({ id: 1, title: document.getElementById('hero-title').value, subtitle: document.getElementById('hero-subtitle').value, cta: document.getElementById('hero-cta').value });
+        await supabaseClient.from('hero_settings').upsert({ id: 1, title: document.getElementById('hero-title').value, subtitle: document.getElementById('hero-subtitle').value, cta: document.getElementById('hero-cta').value });
         btn.textContent = "Save Changes"; showToast();
     });
     document.getElementById('about-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button'); btn.textContent = "Saving...";
-        await supabase.from('about_settings').upsert({ id: 1, vision: document.getElementById('about-vision').value, mission: document.getElementById('about-mission').value });
+        await supabaseClient.from('about_settings').upsert({ id: 1, vision: document.getElementById('about-vision').value, mission: document.getElementById('about-mission').value });
         btn.textContent = "Save Changes"; showToast();
     });
 }
@@ -65,24 +65,24 @@ function setupSettingsForms() {
 // Collection Loaders
 async function loadCollections() {
     // Projects
-    const { data: projData } = await supabase.from('projects').select('*').order('id', { ascending: true });
+    const { data: projData } = await supabaseClient.from('projects').select('*').order('id', { ascending: true });
     currentProjects = projData || [];
     renderProjects();
     document.getElementById('stat-projects').textContent = currentProjects.length;
 
     // Agents
-    const { data: agentData } = await supabase.from('agents').select('*').order('id', { ascending: true });
+    const { data: agentData } = await supabaseClient.from('agents').select('*').order('id', { ascending: true });
     currentAgents = agentData || [];
     renderAgents();
     document.getElementById('stat-agents').textContent = currentAgents.length;
 
     // Services
-    const { data: servData } = await supabase.from('services').select('*').order('id', { ascending: true });
+    const { data: servData } = await supabaseClient.from('services').select('*').order('id', { ascending: true });
     currentServices = servData || [];
     renderServices();
 
     // Media
-    const { data: medData } = await supabase.from('media_posts').select('*').order('id', { ascending: true });
+    const { data: medData } = await supabaseClient.from('media_posts').select('*').order('id', { ascending: true });
     currentMedia = medData || [];
     renderMedia();
     document.getElementById('stat-media').textContent = currentMedia.length;
@@ -196,10 +196,10 @@ window.editMedia = (id) => {
 };
 
 // Delete Handlers
-window.deleteProject = async (id) => { if(confirm('Delete project?')) { await supabase.from('projects').delete().eq('id', id); loadCollections(); } };
-window.deleteAgent = async (id) => { if(confirm('Delete agent?')) { await supabase.from('agents').delete().eq('id', id); loadCollections(); } };
-window.deleteService = async (id) => { if(confirm('Delete service?')) { await supabase.from('services').delete().eq('id', id); loadCollections(); } };
-window.deleteMedia = async (id) => { if(confirm('Delete post?')) { await supabase.from('media_posts').delete().eq('id', id); loadCollections(); } };
+window.deleteProject = async (id) => { if(confirm('Delete project?')) { await supabaseClient.from('projects').delete().eq('id', id); loadCollections(); } };
+window.deleteAgent = async (id) => { if(confirm('Delete agent?')) { await supabaseClient.from('agents').delete().eq('id', id); loadCollections(); } };
+window.deleteService = async (id) => { if(confirm('Delete service?')) { await supabaseClient.from('services').delete().eq('id', id); loadCollections(); } };
+window.deleteMedia = async (id) => { if(confirm('Delete post?')) { await supabaseClient.from('media_posts').delete().eq('id', id); loadCollections(); } };
 
 // Form Submissions
 function setupCollectionForms() {
@@ -215,8 +215,8 @@ function setupCollectionForms() {
             date: document.getElementById('p-date').value,
             img: document.getElementById('p-img').value,
         };
-        if(id) { await supabase.from('projects').update(payload).eq('id', id); } 
-        else { await supabase.from('projects').insert([payload]); }
+        if(id) { await supabaseClient.from('projects').update(payload).eq('id', id); } 
+        else { await supabaseClient.from('projects').insert([payload]); }
         closeModal('projectModal'); loadCollections(); showToast();
     });
 
@@ -229,8 +229,8 @@ function setupCollectionForms() {
             bio: document.getElementById('a-bio').value,
             image: document.getElementById('a-img').value,
         };
-        if(id) { await supabase.from('agents').update(payload).eq('id', id); } 
-        else { await supabase.from('agents').insert([payload]); }
+        if(id) { await supabaseClient.from('agents').update(payload).eq('id', id); } 
+        else { await supabaseClient.from('agents').insert([payload]); }
         closeModal('agentModal'); loadCollections(); showToast();
     });
 
@@ -242,8 +242,8 @@ function setupCollectionForms() {
             description: document.getElementById('s-desc').value,
             icon_svg: document.getElementById('s-icon').value,
         };
-        if(id) { await supabase.from('services').update(payload).eq('id', id); } 
-        else { await supabase.from('services').insert([payload]); }
+        if(id) { await supabaseClient.from('services').update(payload).eq('id', id); } 
+        else { await supabaseClient.from('services').insert([payload]); }
         closeModal('serviceModal'); loadCollections(); showToast();
     });
 
@@ -259,8 +259,8 @@ function setupCollectionForms() {
             date: id ? undefined : new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }),
             read_time: '5 min read' // default placeholder
         };
-        if(id) { await supabase.from('media_posts').update(payload).eq('id', id); } 
-        else { await supabase.from('media_posts').insert([payload]); }
+        if(id) { await supabaseClient.from('media_posts').update(payload).eq('id', id); } 
+        else { await supabaseClient.from('media_posts').insert([payload]); }
         closeModal('mediaModal'); loadCollections(); showToast();
     });
 }
