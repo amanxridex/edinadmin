@@ -310,20 +310,8 @@
                         <h2>Testimonials</h2>
                         <button class="btn btn-primary" onclick="openModal('testimonials')">Add Testimonial</button>
                     </div>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Company</th>
-                                    <th>Subtitle</th>
-                                    <th>Review text</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="testimonials-table-body">
-                                <!-- JS Populated -->
-                            </tbody>
-                        </table>
+                    <div id="testimonials-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                        <!-- JS Populated -->
                     </div>
                 </section>
             

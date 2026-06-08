@@ -543,23 +543,33 @@ window.updateLeadStatus = async (id, newStatus) => {
 async function loadTestimonials() {
     const { data: tests } = await supabaseClient.from('testimonials').select('*').order('id', { ascending: true });
     currentTestimonials = tests || [];
-    const tbody = document.getElementById('testimonials-table-body');
-    if(!tbody) return;
-    tbody.innerHTML = currentTestimonials.map(t => `
-        <tr>
-            <td>
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    ${t.logo ? `<img src="${t.logo}" style="width: 30px; height: 30px; border-radius: 4px; object-fit: contain; background: #fff;" />` : ''}
-                    ${t.company}
+    const grid = document.getElementById('testimonials-grid');
+    if(!grid) return;
+    grid.innerHTML = currentTestimonials.map(t => `
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; position: relative; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(74, 139, 250, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.05)';">
+            
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 50px; height: 50px; border-radius: 12px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 0.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                    <img src="${t.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.company)}&background=random`}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(t.company)}&background=random';" />
                 </div>
-            </td>
-            <td>${t.subtitle}</td>
-            <td><div style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.review_text}">${t.review_text}</div></td>
-            <td>
-                <button class="btn-text" onclick="openModal('testimonials', ${t.id})">Edit</button>
-                <button class="btn-text text-danger" style="margin-left:10px;color:#ef4444;" onclick="deleteItem('testimonials', ${t.id})">Delete</button>
-            </td>
-        </tr>
+                <div>
+                    <h4 style="margin: 0; color: #fff; font-size: 1.1rem; font-weight: 600;">${t.company}</h4>
+                    <span style="color: ${t.box_color || '#4a8bfa'}; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">${t.subtitle}</span>
+                </div>
+            </div>
+
+            <div style="flex: 1; margin-top: 0.5rem;">
+                <p style="margin: 0; color: #a0a0a0; font-size: 0.95rem; line-height: 1.6; font-style: italic;">"${t.review_text}"</p>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; margin-top: auto;">
+                <button onclick="openModal('testimonials', ${t.id})" style="flex: 1; background: rgba(74, 139, 250, 0.1); color: #4a8bfa; border: 1px solid rgba(74, 139, 250, 0.2); padding: 0.5rem; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='rgba(74, 139, 250, 0.2)';" onmouseout="this.style.background='rgba(74, 139, 250, 0.1)';">Edit</button>
+                <button onclick="if(confirm('Delete testimonial?')) deleteItem('testimonials', ${t.id})" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)';" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)';">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </div>
+            
+        </div>
     `).join('');
 }
 
