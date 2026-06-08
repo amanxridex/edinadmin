@@ -25,12 +25,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Fetch initial basic data
-    await initDashboard();
-
-    // Setup forms
-    setupSettingsForms();
-    setupCollectionForms();
+    // Login Logic
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            if (user === 'JAADUGAR' && pass === 'EDINFRATECH1') {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('admin-container').style.display = 'flex';
+                // Fetch initial basic data
+                await initDashboard();
+                // Setup forms
+                setupSettingsForms();
+                setupCollectionForms();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
+    }
 });
 
 async function initDashboard() {

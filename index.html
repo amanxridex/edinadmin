@@ -10,7 +10,27 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="admin-container">
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>ED INFRATECH</h2>
+            <p>Restricted Admin Portal</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="login-user" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-pass" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary">Secure Access</button>
+                <div id="login-error">Invalid credentials. Access denied.</div>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-container" id="admin-container" style="display: none;">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
