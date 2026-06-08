@@ -7,6 +7,7 @@ let currentProjects = [];
 let currentAgents = [];
 let currentServices = [];
 let currentMedia = [];
+let currentLeads = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Tabs Navigation
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadSettings();
     await loadCollections();
     await loadAnalytics();
+    await loadLeads();
 
     // Setup forms
     setupSettingsForms();
@@ -355,3 +357,48 @@ async function loadAnalytics() {
         }
     });
 }
+
+// Leads Logic
+async function loadLeads() {
+    const { data: leadsData } = await supabaseClient.from('leads').select('*').order('created_at', { ascending: false });
+    currentLeads = leadsData || [];
+    document.getElementById('stat-leads').textContent = currentLeads.length;
+
+    const tbody = document.getElementById('leads-table-body');
+    tbody.innerHTML = currentLeads.map(l => {
+        const date = new Date(l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const badgeColor = l.status === 'New' ? '#3b82f6' : l.status === 'Contacted' ? '#f59e0b' : '#10b981';
+        return `
+        <tr>
+            <td>${date}</td>
+            <td style="font-weight: 600;">${l.name}</td>
+            <td>
+                <div>${l.email}</div>
+                <div style="color:#aaa;font-size:0.85rem;">${l.phone || 'N/A'}</div>
+            </td>
+            <td><div style="max-width:250px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${l.message}">${l.message}</div></td>
+            <td><span class="badge" style="background:rgba(255,255,255,0.1);color:${badgeColor}; border:1px solid ${badgeColor};">${l.status}</span></td>
+            <td>
+                <select onchange="updateLeadStatus(${l.id}, this.value)" style="background:rgba(0,0,0,0.3);color:#fff;border:1px solid rgba(255,255,255,0.1);padding:0.3rem;border-radius:4px;margin-right:0.5rem;">
+                    <option value="New" ${l.status === 'New' ? 'selected' : ''}>New</option>
+                    <option value="Contacted" ${l.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
+                    <option value="Resolved" ${l.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                </select>
+                <button class="btn-text text-danger" style="color:#ef4444;" onclick="deleteLead(${l.id})">Delete</button>
+            </td>
+        </tr>
+    `}).join('');
+}
+
+window.updateLeadStatus = async (id, newStatus) => {
+    await supabaseClient.from('leads').update({ status: newStatus }).eq('id', id);
+    loadLeads();
+    showToast();
+};
+
+window.deleteLead = async (id) => {
+    if(confirm('Delete lead?')) {
+        await supabaseClient.from('leads').delete().eq('id', id);
+        loadLeads();
+    }
+};
