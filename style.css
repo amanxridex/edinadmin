@@ -1,0 +1,75 @@
+/* Additions to the existing style.css for the Modals */
+:root {
+    --bg-dark: #030712;
+    --bg-panel: #111827;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-main: #f9fafb;
+    --text-muted: #9ca3af;
+    --accent: #4a8bfa;
+    --accent-hover: #3b7ceb;
+    --success: #10b981;
+    --warning: #f59e0b;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
+
+/* Layout */
+.admin-container { display: flex; height: 100vh; }
+.sidebar { width: 280px; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 1.5rem; }
+.sidebar-header { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.5rem; }
+.sidebar-header h2 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.05em; }
+.badge { background-color: rgba(74, 139, 250, 0.2); color: var(--accent); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+.nav-section { color: #555; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; margin-top: 1.5rem; margin-bottom: 0.5rem; padding-left: 0.5rem; }
+.nav-btn { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.875rem 1rem; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: left; }
+.nav-btn svg { width: 20px; height: 20px; }
+.nav-btn:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--text-main); }
+.nav-btn.active { background-color: rgba(74, 139, 250, 0.1); color: var(--accent); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; }
+
+.main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+.top-header { padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.02); }
+.top-header h1 { font-size: 1.8rem; font-weight: 600; }
+.content-area { padding: 2rem 3rem; }
+
+.tab-content { display: none; animation: fadeIn 0.3s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+.stat-card { background-color: var(--bg-panel); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); }
+.stat-card h3 { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-bottom: 0.5rem; }
+.stat-card .value { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+
+.panel { background-color: var(--bg-panel); border-radius: 16px; padding: 2rem; border: 1px solid var(--border-color); margin-bottom: 2rem; }
+.panel h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.panel-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+
+.btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-primary { background-color: var(--accent); color: #000; }
+.btn-primary:hover { background-color: var(--accent-hover); }
+.btn-secondary { background-color: rgba(255, 255, 255, 0.1); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.2); }
+.btn-secondary:hover { background-color: rgba(255, 255, 255, 0.15); }
+.btn-text { background: transparent; color: var(--accent); border: none; cursor: pointer; font-weight: 500; }
+.btn-text:hover { text-decoration: underline; }
+
+.admin-form .form-group { margin-bottom: 1.5rem; }
+.admin-form label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
+.admin-form input, .admin-form textarea { width: 100%; padding: 1rem; background-color: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 1rem; outline: none; }
+.admin-form input:focus, .admin-form textarea:focus { border-color: var(--accent); }
+.form-actions { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; }
+
+.table-container { overflow-x: auto; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+.admin-table th { color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
+
+.toast { position: fixed; bottom: 2rem; right: 2rem; background-color: var(--success); color: #fff; padding: 1rem 2rem; border-radius: 8px; font-weight: 500; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 10000; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Modal Styles */
+.modal { display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
+.modal-content { background-color: var(--bg-panel); margin: 5% auto; padding: 2rem; border: 1px solid var(--border-color); border-radius: 16px; width: 600px; max-width: 90%; position: relative; animation: slideDown 0.3s ease; }
+@keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.close { color: #aaa; position: absolute; top: 1.5rem; right: 2rem; font-size: 28px; font-weight: bold; cursor: pointer; }
+.close:hover, .close:focus { color: #fff; text-decoration: none; cursor: pointer; }
+.modal-content h2 { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
