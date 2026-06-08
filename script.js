@@ -474,30 +474,63 @@ async function loadLeads() {
     currentLeads = leadsData || [];
     document.getElementById('stat-leads').textContent = currentLeads.length;
 
-    const tbody = document.getElementById('leads-table-body');
-    tbody.innerHTML = currentLeads.map(l => {
+    const countBadge = document.getElementById('leads-count-badge');
+    if (countBadge) countBadge.textContent = currentLeads.length;
+
+    const grid = document.getElementById('leads-grid');
+    if (!grid) return;
+
+    if (currentLeads.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1); color: #9ca3af;">No incoming leads yet.</div>`;
+        return;
+    }
+
+    grid.innerHTML = currentLeads.map(l => {
         const date = new Date(l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        const badgeColor = l.status === 'New' ? '#3b82f6' : l.status === 'Contacted' ? '#f59e0b' : '#10b981';
+        let badgeColor = l.status === 'New' ? '#3b82f6' : l.status === 'Contacted' ? '#f59e0b' : '#10b981';
+        let badgeBg = l.status === 'New' ? 'rgba(59, 130, 246, 0.1)' : l.status === 'Contacted' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+        
         return `
-        <tr>
-            <td>${date}</td>
-            <td style="font-weight: 600;">${l.name}</td>
-            <td>
-                <div>${l.email}</div>
-                <div style="color:#aaa;font-size:0.85rem;">${l.phone || 'N/A'}</div>
-            </td>
-            <td><div style="max-width:250px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${l.message}">${l.message}</div></td>
-            <td><span class="badge" style="background:rgba(255,255,255,0.1);color:${badgeColor}; border:1px solid ${badgeColor};">${l.status}</span></td>
-            <td>
-                <select onchange="updateLeadStatus(${l.id}, this.value)" style="background:rgba(0,0,0,0.3);color:#fff;border:1px solid rgba(255,255,255,0.1);padding:0.3rem;border-radius:4px;margin-right:0.5rem;">
-                    <option value="New" ${l.status === 'New' ? 'selected' : ''}>New</option>
-                    <option value="Contacted" ${l.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
-                    <option value="Resolved" ${l.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+        <div style="background: linear-gradient(145deg, rgba(30,40,60,0.4), rgba(15,20,30,0.6)); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; position: relative; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 25px rgba(0,0,0,0.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <h3 style="margin: 0 0 0.2rem 0; color: #fff; font-size: 1.2rem; font-weight: 600;">${l.name}</h3>
+                    <div style="color: #9ca3af; font-size: 0.85rem;">${date}</div>
+                </div>
+                <span style="background: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${badgeColor}; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">${l.status}</span>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.02);">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; color: #d1d5db; font-size: 0.9rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <a href="mailto:${l.email}" style="color: #60a5fa; text-decoration: none;">${l.email}</a>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; color: #d1d5db; font-size: 0.9rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    <span>${l.phone || 'No phone provided'}</span>
+                </div>
+            </div>
+
+            <div style="flex: 1; margin-bottom: 1.5rem;">
+                <p style="margin: 0; color: #e5e7eb; font-size: 0.95rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" title="${l.message}">
+                    "${l.message}"
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; align-items: center;">
+                <select onchange="updateLeadStatus(${l.id}, this.value)" style="flex: 1; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 8px; outline: none; cursor: pointer;">
+                    <option value="New" ${l.status === 'New' ? 'selected' : ''}>Mark as New</option>
+                    <option value="Contacted" ${l.status === 'Contacted' ? 'selected' : ''}>Mark Contacted</option>
+                    <option value="Resolved" ${l.status === 'Resolved' ? 'selected' : ''}>Mark Resolved</option>
                 </select>
-                <button class="btn-text text-danger" style="color:#ef4444;" onclick="deleteItem('leads', ${l.id})">Delete</button>
-            </td>
-        </tr>
-    `}).join('');
+                <button onclick="if(confirm('Delete lead?')) deleteItem('leads', ${l.id})" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)';" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)';">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </div>
+        </div>
+        `
+    }).join('');
 }
 
 window.updateLeadStatus = async (id, newStatus) => {

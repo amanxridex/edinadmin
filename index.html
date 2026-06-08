@@ -216,24 +216,10 @@
                 <!-- Leads Section -->
                 <section id="leads-tab" class="tab-content">
                     <div class="header-flex">
-                        <h2>Incoming Leads</h2>
+                        <h2>Incoming Leads <span class="badge" id="leads-count-badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; margin-left: 10px;">0</span></h2>
                     </div>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Name</th>
-                                    <th>Contact</th>
-                                    <th>Message</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leads-table-body">
-                                <!-- JS Populated -->
-                            </tbody>
-                        </table>
+                    <div id="leads-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                        <!-- JS Populated Cards -->
                     </div>
                 </section>
 
